@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 10, 2025 at 03:23 PM
+-- Generation Time: Jan 10, 2025 at 03:29 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -91,9 +91,9 @@ CREATE TABLE `delivery_details` (
 --
 
 INSERT INTO `delivery_details` (`delivery_id`, `transaction_id`, `status`, `current_position`, `evidence`, `date`, `updated_by`) VALUES
-(1, 1, 'pending', 'bangunan', '456565', '2025-01-10', 'f'),
-(2, 5, 'pending', 'gudang', '45646', '2025-01-10', 'f'),
-(3, 5, 'in_progress', 'rumah', '123', '2025-01-10', 'f'),
+(1, 1, 'pending', 'bangunan', '456565', '2025-01-10', 'Aton'),
+(2, 5, 'pending', 'gudang', '45646', '2025-01-10', 'Alex'),
+(3, 5, 'in_progress', 'rumah', '123', '2025-01-10', 'Alex'),
 (4, 7, 'on_delivery', 'bdg', '232', '2025-01-10', 'f');
 
 -- --------------------------------------------------------
