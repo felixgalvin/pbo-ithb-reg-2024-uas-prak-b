@@ -7,6 +7,7 @@ import javax.swing.*;
 import Controller.Login;
 import Controller.Register;
 import Model.classes.SingletonManager;
+import Model.classes.Customer;
 
 public class MainMenu extends JFrame{
     private JButton regis, login, addTransaksi, viewHistory;
@@ -48,7 +49,12 @@ public class MainMenu extends JFrame{
         panel.add(judulAtas, gbc);
 
         // Header 2
+        Customer currentUser = SingletonManager.getInstance().getUser();
         JLabel judulBawah = new JLabel("Pilih opsi Anda", SwingConstants.CENTER);
+        
+        if (currentUser != null) {
+            judulBawah = new JLabel(String.format("Welcome, %s Pilih opsi Anda", currentUser.getName()), SwingConstants.CENTER);
+        }
         judulBawah.setFont(new Font("Arial", Font.PLAIN, 20));
         judulBawah.setForeground(Color.WHITE);
 
@@ -97,6 +103,26 @@ public class MainMenu extends JFrame{
         gbc.gridwidth = 2;
         panel.add(addTransaksi, gbc);
 
+        JButton addDetailTransaksi =  new JButton("TAMBAH DETAIL TRANSAKSI");
+        addDetailTransaksi.setFont(new Font("Arial", Font.PLAIN, 16));
+        addDetailTransaksi.setBackground(Color.BLUE);
+        addDetailTransaksi.setForeground(Color.WHITE);
+        addDetailTransaksi.addActionListener(e -> {
+            if (SingletonManager.getInstance().getUser() == null) {
+                JOptionPane.showMessageDialog(null, "Anda Belum LOGIN", "Error",
+                JOptionPane.ERROR_MESSAGE);
+            } else {
+                dispose();
+                new AddDetailDeliveryView();
+            }
+
+        });
+
+        gbc.gridx = 2;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        panel.add(addDetailTransaksi, gbc);     
+
         viewHistory = new JButton("LIHAT HISTORY");
         viewHistory.setFont(new Font("Arial", Font.PLAIN, 16));
         viewHistory.setBackground(Color.BLUE);
@@ -107,15 +133,15 @@ public class MainMenu extends JFrame{
                 JOptionPane.ERROR_MESSAGE);
             } else {
                 dispose();
-                new HistoryView();
+                new ShowHistoryView();
             }
 
         });
 
-        gbc.gridx = 2;
-        gbc.gridy = 4;
+        gbc.gridx = 0;
+        gbc.gridy = 5;
         gbc.gridwidth = 2;
-        panel.add(viewHistory, gbc);     
+        panel.add(viewHistory, gbc);  
         
         add(panel);
         

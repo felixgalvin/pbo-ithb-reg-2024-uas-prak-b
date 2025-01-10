@@ -2,9 +2,13 @@ package Model.classes;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+
+import Controller.DataBaseController;
 
 public class Transaction {
 
@@ -112,26 +116,49 @@ public class Transaction {
         this.receiptPhone = receiptPhone;
     }
 
+    public static ArrayList<Transaction> getTransactions() {
+        ArrayList<Transaction> transactions = new ArrayList<>();
+        String query = "SELECT * FROM transaction ORDER BY created_at ASC";
+        try (Connection con = ConnectionManager.getConnection(); PreparedStatement st = con.prepareStatement(query)) {
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                transactions.add(new Transaction(
+                        rs.getInt("id"),
+                        rs.getInt("cust_id"),
+                        rs.getString("delivery_type"),
+                        rs.getDouble("delivery_weight"),
+                        rs.getInt("total_cost"),
+                        rs.getTimestamp("created_at"),
+                        rs.getString("receipt_name"),
+                        rs.getString("receipt_address"),
+                        rs.getString("receipt_phone")));
+            }
+        } catch (Exception ex) {
+            System.out.println("Terjadi kesalahan: " + ex.getMessage());
+        } 
+        return transactions;
+    }
+
     public static boolean addTransaksi(Transaction trn) {
         String query = "INSERT INTO transaction (cust_id, delivery_type, delivery_weight, total_cost, created_at, receipt_name, receipt_address, receipt_phone) VALUES(?,?,?,?,?,?,?,?)";
-        int type = getCategory(trn.deliveryType);
 
-        try (Connection con = ConnectionManager.getConnection();
-                PreparedStatement st = con.prepareStatement(query)){
-            st.setInt(1, cust_id);
-            st.setInt(2, type);
-            st.setDouble(3, package_weight);
-            st.setDouble(4, total_cost);
-            st.setTimestamp(5, timestamp );
-            st.setString(6, receiptName);
-            st.setString(7, receiptAddress);
-            st.setString(8, receiptPhone);
+        int fee = new DataBaseController().getDeliveryFeeByName(trn.deliveryType);
+
+        try (Connection con = ConnectionManager.getConnection(); PreparedStatement st = con.prepareStatement(query)){
+            st.setInt(1, SingletonManager.getInstance().getUser().getId());
+            st.setInt(2, new DataBaseController().getDeliveryIdByName(trn.deliveryType));
+            st.setDouble(3, trn.deliveryWeight);
+            st.setDouble(4, fee * trn.deliveryWeight);
+            st.setTimestamp(5, new Timestamp(trn.createdAt.getTime()));
+            st.setString(6, trn.receiptName);
+            st.setString(7, trn.receiptAddress);
+            st.setString(8, trn.receiptPhone);
 
             int rowsInserted = st.executeUpdate();
             return rowsInserted > 0;
 
         } catch (SQLException e) {
-            System.out.println("Terjadi kesalahan saat registrasi: " + ex.getMessage());
+            System.out.println("Terjadi kesalahan saat insertion: " + e.getMessage());
             return false;
         } 
     }

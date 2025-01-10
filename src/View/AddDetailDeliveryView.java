@@ -1,5 +1,6 @@
 package View;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.swing.*;
@@ -8,11 +9,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import Controller.DataBaseController;
+import Model.classes.DeliveryDetails;
 import Model.classes.SingletonManager;
-import Model.classes.Transaction;
+import Model.enums.Status;
 
-public class AddTransactionView extends JFrame {
+public class AddDetailDeliveryView extends JFrame {
     
     private JPanel mainFramePanel;
     private JPanel inputPanel;
@@ -41,10 +42,8 @@ public class AddTransactionView extends JFrame {
         newPair(newLabel(s), b);
     }
 
-    private JComboBox<String> packageTypeComboBox;
-
-    public AddTransactionView() {
-        super("Add Transaction");
+    public AddDetailDeliveryView() {
+        super("Add Detail Delivery");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null);
         setFont(new Font("Arial", Font.BOLD, 30));
@@ -55,20 +54,21 @@ public class AddTransactionView extends JFrame {
         inputPanel = new JPanel(new GridLayout(6, 2, 10, 10));
         inputPanel.setOpaque(false);
         
-        JTextField nameField = new JTextField();
-        newPair("Nama Penerima:", nameField);
+        JTextField transactionId = new JTextField();
+        newPair("Transaction Id:", transactionId);
 
-        JTextField addressField = new JTextField();
-        newPair("Alamat Penerima:", addressField);
+        JTextField currentPosition = new JTextField();
+        newPair("Current Position:", currentPosition);
+      
+        JTextField evidence = new JTextField();
+        newPair("Evidence:", evidence);
+    
+        JTextField updatedBy = new JTextField();  
+        newPair("Updated By:", updatedBy);
 
-        JTextField phoneField = new JTextField();
-        newPair("Nomor Telepon:", phoneField);
-
-        JTextField weightField = new JTextField();
-        newPair("Berat Paket (kg):", weightField);
-
-        packageTypeComboBox = new JComboBox<>(new DataBaseController().getDeliveryType());
-        newPair("Tipe Paket:", packageTypeComboBox);
+        String[] valuesStatus = Arrays.stream(Status.values()).map(Status::name).toArray(String[]::new);
+        JComboBox<String> statusComboBox = new JComboBox<String>(valuesStatus);
+        newPair("Status:", statusComboBox);
 
         JButton saveButton = newButton("Simpan");
         JButton backButton = newButton("Back");
@@ -120,28 +120,20 @@ public class AddTransactionView extends JFrame {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (nameField.getText().isEmpty() || addressField.getText().isEmpty() || phoneField.getText().isEmpty() || weightField.getText().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Semua field harus diisi");
+                if(transactionId.getText().isEmpty() || currentPosition.getText().isEmpty() || evidence.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Maaf, semua field harus diisi");
                     return;
                 }
-                if (Double.parseDouble(weightField.getText()) == 0) {
-                    JOptionPane.showMessageDialog(null, "Berat pengiriman tidak boleh 0");
-                    return;
-                }
-
-
-                Transaction trans = new Transaction(
+                DeliveryDetails dd = new DeliveryDetails(
                     0,
-                    SingletonManager.getInstance().getUser().getId(),
-                    packageTypeComboBox.getSelectedItem().toString(),
-                    Double.parseDouble(weightField.getText()),
-                    0,
+                    Integer.parseInt(transactionId.getText()),
+                    Status.valueOf(statusComboBox.getSelectedItem().toString()), 
+                    currentPosition.getText(),
+                    evidence.getText(),
                     new Date(),
-                    nameField.getText(),
-                    addressField.getText(),
-                    phoneField.getText()
+                    SingletonManager.getInstance().getUser().getName()
                 );
-                if (Transaction.addTransaksi(trans)) {
+                if (DeliveryDetails.addDeliveryDetails(dd)) {
                     JOptionPane.showMessageDialog(null, "Transaksi berhasil");
                     dispose();
                     new MainMenu();

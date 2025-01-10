@@ -1,5 +1,11 @@
 package Model.classes;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 
 import Model.enums.Status;
@@ -83,6 +89,49 @@ public class DeliveryDetails {
 
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
+    }
+
+    public static ArrayList<DeliveryDetails> gDeliveryDetails() {
+        ArrayList<DeliveryDetails> deliveryDetailsList = new ArrayList<>();
+        String query = "SELECT * FROM delivery_details";
+        try (Connection con = ConnectionManager.getConnection(); PreparedStatement st = con.prepareStatement(query)) {
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                deliveryDetailsList.add(new DeliveryDetails(
+                        rs.getInt("delivery_id"),
+                        rs.getInt("transaction_id"),
+                        Status.valueOf(rs.getString("status")),
+                        rs.getString("current_position"),
+                        rs.getString("evidence"),
+                        new Date(rs.getTimestamp("date").getTime()),
+                        rs.getString("updated_by")
+                ));
+            }
+        } catch (SQLException e) {
+            System.out.println("Terjadi kesalahan saat retrieval: " + e.getMessage());
+        }
+        return deliveryDetailsList;
+    }
+
+
+    public static boolean addDeliveryDetails(DeliveryDetails dd) {
+        String query = "INSERT INTO delivery_details (transaction_id, status, current_position, evidence, date, updated_by) VALUES(?,?,?,?,?,?)";
+
+        try (Connection con = ConnectionManager.getConnection(); PreparedStatement st = con.prepareStatement(query)){
+            st.setInt(1, dd.transactionId);
+            st.setString(2, dd.status.name());
+            st.setString(3, dd.currentPosition);
+            st.setString(4, dd.evidence);
+            st.setTimestamp(5, new Timestamp(dd.date.getTime()));
+            st.setString(6, dd.updatedBy);
+
+            int rowsInserted = st.executeUpdate();
+            return rowsInserted > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Terjadi kesalahan saat insertion: " + e.getMessage());
+            return false;
+        } 
     }
 
 }

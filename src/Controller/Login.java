@@ -26,11 +26,11 @@ public class Login {
         
         boolean isValid = false;
 
-        if (Customer.cekLogin(noTelp, pass)) {
+        Customer newCustomer = Customer.cekLogin(noTelp, pass);
+        if (newCustomer != null) {
             isValid = true;
-            Customer user = Customer.getData(noTelp); 
-            SingletonManager.getInstance().setUser(user);
-            loginView.showMessage("Login berhasil! Selamat datang, " + user.getName());
+            SingletonManager.getInstance().setUser(newCustomer);
+            loginView.showMessage("Login berhasil! Selamat datang, " + newCustomer.getName());
             loginView.dispose();
             new MainMenu();
         }

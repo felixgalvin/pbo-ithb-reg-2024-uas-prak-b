@@ -59,14 +59,11 @@ public class Customer {
         this.phone = phone;
     }
 
-    public static boolean cekLogin(String inputEmail, String inputPassword) {
-        if (Customer.Login(inputEmail, inputPassword)) {
-            return true;
-        }
-        return false;
+    public static Customer cekLogin(String inputNomorTelepon, String inputPassword) {
+        return Customer.Login(inputNomorTelepon, inputPassword);
     }
 
-    public static boolean Login(String noTelp, String password){
+    public static Customer Login(String noTelp, String password){
         String query = "SELECT * FROM customer WHERE phone = ? and password = ?";
 
         try (Connection con = ConnectionManager.getConnection();
@@ -76,14 +73,19 @@ public class Customer {
             st.setString(2, password);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
-                    return true;
+                    return new Customer(
+                        rs.getInt("cust_id"),
+                        rs.getString("password"),
+                        rs.getString("name"),
+                        rs.getString("address"),
+                        rs.getString("phone"));
                 }else{
-                    return false;
+                    return null;
                 }
             }
         } catch (Exception ex) {
             System.out.println("Terjadi kesalahan: " + ex.getMessage());
-            return false;
+            return null;
         }
     } 
     public static boolean Register(Customer customer) {
