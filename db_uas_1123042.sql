@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 10, 2025 at 03:29 PM
+-- Generation Time: Jan 10, 2025 at 03:34 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -119,8 +119,8 @@ CREATE TABLE `transaction` (
 --
 
 INSERT INTO `transaction` (`id`, `cust_id`, `delivery_type`, `delivery_weight`, `total_cost`, `created_at`, `receipt_name`, `receipt_address`, `receipt_phone`) VALUES
-(1, 2, 3, 2.5, 3, '2025-01-09', 'hans', 'jl dago', '082134'),
-(2, 4, 2, 4.5, 5, '2025-01-09', 'maio', 'jl asta', '083874'),
+(1, 2, 3, 2, 6000, '2025-01-10', 'hans', 'jl dago', '082134'),
+(2, 4, 2, 4, 8000, '2025-01-10', 'maio', 'jl asta', '083874'),
 (5, 6, 2, 30, 60000, '2025-01-10', 'calvin', 'padasuka', '11111'),
 (6, 6, 3, 38, 114000, '2025-01-10', 'boston', 'dipatiukur', '1'),
 (7, 7, 1, 10, 10000, '2025-01-10', 'f', 'f', '1');
